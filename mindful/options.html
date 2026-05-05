@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Mindful · Settings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="design.css" />
+</head>
+<body class="mindful-options">
+<div class="options-wrap">
+  <h1 class="page-title">Settings</h1>
+  <div class="section-kicker">Tune the friction</div>
+
+  <fieldset>
+    <legend>Nudges</legend>
+    <label class="setting-row">
+      <span>Nudge on download<span class="desc">Toast when a file lands</span></span>
+      <input type="checkbox" id="nudgeOnDownload" />
+    </label>
+    <label class="setting-row">
+      <span>Nudge on new tab<span class="desc">Toast when a tab finishes loading</span></span>
+      <input type="checkbox" id="nudgeOnNewTab" />
+    </label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Tab thresholds</legend>
+    <div class="threshold-row">
+      <span></span>
+      <span class="header">Soft</span>
+      <span class="header">Medium</span>
+      <span class="header">Hard</span>
+    </div>
+    <div class="threshold-row">
+      <span>Open tabs</span>
+      <input type="number" id="tabSoftThreshold" min="1" />
+      <input type="number" id="tabMediumThreshold" min="1" />
+      <input type="number" id="tabHardThreshold" min="1" />
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Download thresholds</legend>
+    <div class="threshold-row">
+      <span></span>
+      <span class="header">Soft</span>
+      <span class="header">Medium</span>
+      <span class="header">Hard</span>
+    </div>
+    <div class="threshold-row">
+      <span>Unfiled downloads</span>
+      <input type="number" id="downloadSoftThreshold" min="1" />
+      <input type="number" id="downloadMediumThreshold" min="1" />
+      <input type="number" id="downloadHardThreshold" min="1" />
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Batched review</legend>
+    <label class="setting-row">
+      <span>Run scheduled reviews<span class="desc">Notification when there's stuff to triage</span></span>
+      <input type="checkbox" id="reviewEnabled" />
+    </label>
+    <label class="setting-row">
+      <span>Interval (hours)<span class="desc">How often to ping you</span></span>
+      <input type="number" id="reviewIntervalHours" min="1" max="24" />
+    </label>
+  </fieldset>
+
+  <button class="save" id="save">Save</button>
+  <span class="form-status" id="saved">Saved</span>
+</div>
+<script src="options.js"></script>
+</body>
+</html>

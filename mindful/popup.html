@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Mindful</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="design.css" />
+</head>
+<body class="mindful-popup">
+  <h1 class="page-title">Mindful</h1>
+  <div class="section-kicker">Where is this going?</div>
+
+  <div id="stats">
+    <div class="stat-row" id="tab-stat">
+      <span>Open tabs</span>
+      <span class="num" id="tab-num">—</span>
+    </div>
+    <div class="stat-row" id="dl-stat">
+      <span>Unfiled downloads</span>
+      <span class="num" id="dl-num">—</span>
+    </div>
+  </div>
+
+  <div class="popup-actions">
+    <button id="open-review" class="primary">Open the review desk</button>
+    <button id="claude-tabs">Send all tabs to Claude</button>
+  </div>
+
+  <div class="popup-footer">
+    <a class="editorial-link" href="#" id="open-options">Settings</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
