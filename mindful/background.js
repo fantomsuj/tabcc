@@ -49,11 +49,13 @@ chrome.runtime.onInstalled.addListener(async () => {
   if (!settings) {
     await chrome.storage.local.set({ settings: DEFAULTS });
   }
-  scheduleReviewAlarm();
+  await scheduleReviewAlarm();
+  await syncOpenTabs();
 });
 
-chrome.runtime.onStartup.addListener(() => {
-  scheduleReviewAlarm();
+chrome.runtime.onStartup.addListener(async () => {
+  await scheduleReviewAlarm();
+  await syncOpenTabs();
 });
 
 async function scheduleReviewAlarm() {
@@ -73,6 +75,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 });
 
 async function triggerBatchedReview() {
+  await syncOpenTabs();
   const tabs = await getUntriagedTabs();
   const downloads = await getUntriagedDownloads();
   if (tabs.length === 0 && downloads.length === 0) return;
@@ -136,13 +139,16 @@ chrome.downloads.onChanged.addListener(async (delta) => {
 
 // ---------- Tabs ----------
 chrome.tabs.onCreated.addListener(async (tab) => {
-  // Skip the new-tab-page and chrome:// URLs
-  if (!tab.url || tab.url === 'chrome://newtab/' || tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
-    // We'll catch the URL on the first onUpdated event instead
+  const url = tab.url || tab.pendingUrl || '';
+  // Skip blank new tabs and browser-internal pages. We'll catch real navigations
+  // on the first onUpdated event instead.
+  if (!url || isInternal(url)) {
+    return;
   }
+
   await recordTab({
     id: tab.id,
-    url: tab.url || tab.pendingUrl || '',
+    url,
     title: tab.title,
     favicon: tab.favIconUrl,
     openerTabId: tab.openerTabId
@@ -156,11 +162,13 @@ chrome.tabs.onCreated.addListener(async (tab) => {
 });
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  const url = tab.url || tab.pendingUrl || '';
+
   // Update stored tab info as title/favicon resolve
-  if (changeInfo.title || changeInfo.favIconUrl || changeInfo.url) {
+  if ((changeInfo.title || changeInfo.favIconUrl || changeInfo.url) && url && !isInternal(url)) {
     await recordTab({
       id: tabId,
-      url: tab.url || '',
+      url,
       title: tab.title,
       favicon: tab.favIconUrl,
       openerTabId: tab.openerTabId
@@ -168,7 +176,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   }
 
   // Fire nudge once the tab has loaded a real URL with a title
-  if (changeInfo.status === 'complete' && tab.url && !isInternal(tab.url)) {
+  if (changeInfo.status === 'complete' && url && !isInternal(url)) {
     const s = await getSettings();
     if (!s.nudgeOnNewTab) return;
 
@@ -180,7 +188,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
       kind: 'tab',
       itemId: tabId,
       title: tab.title || 'New tab',
-      subtitle: hostOf(tab.url),
+      subtitle: hostOf(url),
       pressure: await currentTabPressure()
     });
   }
@@ -223,6 +231,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     try {
       switch (msg.type) {
         case 'getReviewData': {
+          await syncOpenTabs();
           const tabs = await getUntriagedTabs();
           const downloads = await getUntriagedDownloads();
           const savedTabs = await getSavedTabs();
@@ -326,6 +335,24 @@ function hostOf(url) {
 
 function isInternal(url) {
   return url.startsWith('chrome://') || url.startsWith('chrome-extension://') || url.startsWith('about:') || url.startsWith('edge://');
+}
+
+async function syncOpenTabs() {
+  const tabs = await chrome.tabs.query({});
+  await Promise.all(
+    tabs.map(async (tab) => {
+      const url = tab.url || tab.pendingUrl || '';
+      if (!url || isInternal(url)) return;
+
+      await recordTab({
+        id: tab.id,
+        url,
+        title: tab.title,
+        favicon: tab.favIconUrl,
+        openerTabId: tab.openerTabId
+      });
+    })
+  );
 }
 
 async function closeDuplicateTabs(urls) {

@@ -21,9 +21,24 @@
 
     const style = document.createElement('style');
     style.textContent = `
-      :host, .container { all: initial; }
+      :host {
+        all: initial;
+        --paper: #f5efe2;
+        --paper-2: #ede5d2;
+        --ink: #1a1a1a;
+        --ink-2: #5c4a32;
+        --rule: #2b2b2b;
+        --accent: #8b1a1a;
+        --accent-soft: #a04923;
+        --pressure-hard: #e6d8bc;
+        --pressure-rest: #d8c9a8;
+        --shadow: 4px 4px 0 #2b2b2b;
+        --font-serif: 'EB Garamond', 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+        --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      }
       .container {
-        font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+        all: initial;
+        font-family: var(--font-serif);
         position: fixed;
         bottom: 24px;
         right: 24px;
@@ -31,10 +46,10 @@
         pointer-events: auto;
       }
       .toast {
-        background: #f6f1e7;
-        color: #1a1a1a;
-        border: 1px solid #2b2b2b;
-        box-shadow: 4px 4px 0 #2b2b2b;
+        background: var(--paper);
+        color: var(--ink);
+        border: 1px solid var(--rule);
+        box-shadow: var(--shadow);
         padding: 14px 16px 12px;
         position: relative;
         opacity: 0;
@@ -43,38 +58,41 @@
         margin-top: 10px;
       }
       .toast.show { opacity: 1; transform: translateY(0); }
-      .toast.medium { background: #f0e6d2; }
-      .toast.hard { background: #e8dcc4; border-width: 2px; box-shadow: 5px 5px 0 #2b2b2b; }
+      .toast.medium { background: var(--paper-2); }
+      .toast.hard { background: var(--pressure-hard); border-width: 2px; box-shadow: 5px 5px 0 var(--rule); }
       .label {
-        font-family: 'IBM Plex Mono', 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        font-family: var(--font-mono);
         font-size: 9.5px;
         letter-spacing: 0.18em;
         text-transform: uppercase;
-        color: #5c4a32;
+        color: var(--ink-2);
         margin-bottom: 6px;
       }
-      .label .pressure { float: right; color: #8a6d44; }
-      .label .pressure.medium { color: #a04923; }
-      .label .pressure.hard { color: #8b1a1a; font-weight: 700; }
+      .label .pressure { color: var(--ink-2); white-space: nowrap; }
+      .label .pressure.medium { color: var(--accent-soft); }
+      .label .pressure.hard { color: var(--accent); font-weight: 700; }
       .title {
         font-size: 16px;
         line-height: 1.3;
         margin: 0 0 2px;
         font-weight: 500;
-        color: #1a1a1a;
+        color: var(--ink);
         word-break: break-word;
       }
       .subtitle {
-        font-family: 'IBM Plex Mono', 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+        font-family: var(--font-mono);
         font-size: 11px;
-        color: #5c4a32;
+        color: var(--ink-2);
         margin-bottom: 10px;
         word-break: break-all;
       }
       .question {
         font-style: italic;
         font-size: 13.5px;
-        color: #2b2b2b;
+        color: var(--rule);
         margin: 0 0 10px;
       }
       .actions {
@@ -83,20 +101,20 @@
         flex-wrap: wrap;
       }
       button {
-        font-family: 'IBM Plex Mono', 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+        font-family: var(--font-mono);
         font-size: 10.5px;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
         background: transparent;
-        color: #1a1a1a;
-        border: 1px solid #1a1a1a;
+        color: var(--ink);
+        border: 1px solid var(--ink);
         padding: 5px 9px;
         cursor: pointer;
         transition: background 120ms ease, color 120ms ease;
       }
-      button:hover { background: #1a1a1a; color: #f6f1e7; }
-      button.primary { background: #1a1a1a; color: #f6f1e7; }
-      button.primary:hover { background: #5c4a32; border-color: #5c4a32; }
+      button:hover { background: var(--ink); color: var(--paper); }
+      button.primary { background: var(--ink); color: var(--paper); }
+      button.primary:hover { background: var(--ink-2); border-color: var(--ink-2); }
       .close {
         position: absolute;
         top: 6px;
@@ -105,14 +123,24 @@
         border: none;
         font-size: 16px;
         line-height: 1;
-        color: #5c4a32;
+        color: var(--ink-2);
         cursor: pointer;
         padding: 2px 4px;
       }
-      .close:hover { color: #1a1a1a; background: transparent; }
+      .close:hover { color: var(--ink); background: transparent; }
+      .hard-banner {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 8px;
+        border-bottom: 1px solid var(--accent);
+        padding-bottom: 6px;
+      }
       .pressure-bar {
         height: 2px;
-        background: linear-gradient(to right, #8a6d44 var(--pct, 0%), #d8c9a8 var(--pct, 0%));
+        background: linear-gradient(to right, var(--accent-soft) var(--pct, 0%), var(--pressure-rest) var(--pct, 0%));
         margin: 8px -16px -12px;
       }
     `;
@@ -197,7 +225,7 @@
     // Hard pressure: prepend a stronger CTA
     if (level === 'hard') {
       const banner = document.createElement('div');
-      banner.style.cssText = 'font-family: IBM Plex Mono, monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#8b1a1a; margin-bottom:8px; border-bottom:1px solid #8b1a1a; padding-bottom:6px;';
+      banner.className = 'hard-banner';
       banner.textContent = `You're past ${pressure.threshold}. Triage before adding more.`;
       toast.insertBefore(banner, toast.querySelector('.label'));
     }

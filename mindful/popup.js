@@ -24,8 +24,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.close();
   });
 
-  document.getElementById('open-options').addEventListener('click', (e) => {
+  document.getElementById('open-options').addEventListener('click', async (e) => {
     e.preventDefault();
-    chrome.runtime.openOptionsPage();
+    try {
+      await chrome.runtime.openOptionsPage();
+    } catch (err) {
+      await chrome.tabs.create({ url: chrome.runtime.getURL('options.html') });
+    }
+    window.close();
   });
 });

@@ -250,7 +250,6 @@ function savedRow(item) {
   row.innerHTML = `
     <label class="saved-check">
       <input type="checkbox" data-act="complete-saved" />
-      <span></span>
     </label>
     ${item.favicon ? `<img class="saved-favicon" src="${escapeHtml(item.favicon)}" alt="" />` : '<span class="saved-favicon placeholder"></span>'}
     <div class="saved-body">

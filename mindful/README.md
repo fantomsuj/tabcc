@@ -52,6 +52,7 @@ Most likely first tune: lower the soft thresholds if you want to be more aware, 
 ```
 manifest.json      MV3 config
 background.js      Service worker — watches downloads, tabs, schedules reviews
+design.css         Shared editorial paper-desk design system for extension pages
 nudge.js + .css    Content script — draws toast nudges in shadow DOM
 review.html/css/js The batched review desk
 options.html/js    Settings (threshold tuning)
