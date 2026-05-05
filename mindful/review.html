@@ -27,30 +27,47 @@
     <div class="rule"></div>
   </header>
 
-  <main>
-    <section id="downloads-section" class="section">
-      <div class="section-head">
-        <h2>Downloads</h2>
-        <div class="section-actions">
-          <button id="downloads-claude" class="ghost">Send all to Claude</button>
-          <button id="downloads-clear" class="ghost">Mark all reviewed</button>
+  <main class="review-shell">
+    <div class="review-primary">
+      <section id="downloads-section" class="section">
+        <div class="section-head">
+          <h2>Downloads</h2>
+          <div class="section-actions">
+            <button id="downloads-claude" class="ghost">Send all to Claude</button>
+            <button id="downloads-clear" class="ghost">Mark all reviewed</button>
+          </div>
         </div>
-      </div>
-      <div id="downloads-list" class="list"></div>
-      <p id="downloads-empty" class="empty hidden">Nothing to file. Quiet desk.</p>
-    </section>
+        <div id="downloads-list" class="list"></div>
+        <p id="downloads-empty" class="empty hidden">Nothing to file. Quiet desk.</p>
+      </section>
 
-    <section id="tabs-section" class="section">
-      <div class="section-head">
-        <h2>Tabs</h2>
-        <div class="section-actions">
-          <button id="tabs-claude" class="ghost">Send all to Claude</button>
-          <button id="tabs-cluster" class="ghost">Cluster with Claude</button>
+      <section id="tabs-section" class="section">
+        <div class="section-head">
+          <h2>Tabs</h2>
+          <div class="section-actions">
+            <button id="tabs-claude" class="ghost">Send all to Claude</button>
+            <button id="tabs-cluster" class="ghost">Cluster with Claude</button>
+          </div>
+        </div>
+        <div id="tabs-list" class="list"></div>
+        <p id="tabs-empty" class="empty hidden">No untriaged tabs. Notable.</p>
+      </section>
+    </div>
+
+    <aside class="saved-panel" aria-labelledby="saved-heading">
+      <div class="saved-head">
+        <div>
+          <h2 id="saved-heading">Saved for later</h2>
+          <p id="saved-count"></p>
         </div>
       </div>
-      <div id="tabs-list" class="list"></div>
-      <p id="tabs-empty" class="empty hidden">No untriaged tabs. Notable.</p>
-    </section>
+      <div id="saved-list" class="saved-list"></div>
+      <p id="saved-empty" class="empty">No saved tabs yet.</p>
+      <details id="saved-archive" class="saved-archive">
+        <summary>Archive <span id="saved-archive-count"></span></summary>
+        <div id="saved-archive-list" class="saved-archive-list"></div>
+      </details>
+    </aside>
   </main>
 
   <footer>

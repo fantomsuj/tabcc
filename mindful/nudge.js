@@ -156,6 +156,7 @@
       <div class="actions">
         ${kind === 'tab' ? `
           <button data-action="keep" class="primary">Keep</button>
+          <button data-action="save-later">Save</button>
           <button data-action="close-tab">Close</button>
           <button data-action="claude">→ Claude</button>
           <button data-action="review">Review later</button>
@@ -206,6 +207,15 @@
     if (kind === 'tab') {
       if (action === 'keep') {
         chrome.runtime.sendMessage({ type: 'triageTab', id: itemId, action: 'keep' });
+      } else if (action === 'save-later') {
+        chrome.runtime.sendMessage({
+          type: 'saveTabForLater',
+          tab: {
+            id: itemId,
+            url: location.href,
+            title: document.title
+          }
+        });
       } else if (action === 'close-tab') {
         chrome.runtime.sendMessage({ type: 'triageTab', id: itemId, action: 'close' });
       } else if (action === 'claude') {

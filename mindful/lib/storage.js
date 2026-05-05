@@ -3,7 +3,7 @@
 // Browser history stays where it is — we just read it via chrome.history.
 
 const DB_NAME = 'mindful';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 let dbPromise = null;
 
@@ -25,6 +25,11 @@ function openDB() {
       }
       if (!db.objectStoreNames.contains('meta')) {
         db.createObjectStore('meta', { keyPath: 'key' });
+      }
+      if (!db.objectStoreNames.contains('savedTabs')) {
+        const s = db.createObjectStore('savedTabs', { keyPath: 'id' });
+        s.createIndex('status', 'status');
+        s.createIndex('savedAt', 'savedAt');
       }
     };
     req.onsuccess = () => resolve(req.result);
@@ -205,5 +210,80 @@ export async function setMeta(key, value) {
     const req = store.put({ key, value });
     req.onsuccess = () => res(true);
     req.onerror = () => res(false);
+  });
+}
+
+export async function saveTabForLater(tab, note = '') {
+  const now = Date.now();
+  const store = await tx('savedTabs', 'readwrite');
+  return new Promise((res, rej) => {
+    const row = {
+      id: `${now}_${tab.id || Math.random().toString(36).slice(2)}`,
+      url: tab.url || '',
+      title: tab.title || '',
+      favicon: tab.favicon || tab.favIconUrl || '',
+      sourceTabId: tab.id ?? tab.sourceTabId ?? null,
+      sourceCreatedAt: tab.createdAt || null,
+      note: note || '',
+      savedAt: now,
+      status: 'active',
+      completedAt: null,
+      dismissedAt: null
+    };
+    const req = store.put(row);
+    req.onsuccess = () => res(row);
+    req.onerror = () => rej(req.error);
+  });
+}
+
+export async function getSavedTabs() {
+  const store = await tx('savedTabs');
+  return new Promise((res) => {
+    const req = store.getAll();
+    req.onsuccess = () => {
+      const rows = req.result || [];
+      const active = rows
+        .filter((r) => r.status === 'active')
+        .sort((a, b) => b.savedAt - a.savedAt);
+      const archived = rows
+        .filter((r) => r.status === 'completed')
+        .sort((a, b) => (b.completedAt || b.savedAt) - (a.completedAt || a.savedAt));
+      res({ active, archived });
+    };
+    req.onerror = () => res({ active: [], archived: [] });
+  });
+}
+
+export async function completeSavedTab(id) {
+  const store = await tx('savedTabs', 'readwrite');
+  return new Promise((res) => {
+    const getReq = store.get(id);
+    getReq.onsuccess = () => {
+      const row = getReq.result;
+      if (!row) return res(null);
+      row.status = 'completed';
+      row.completedAt = Date.now();
+      const putReq = store.put(row);
+      putReq.onsuccess = () => res(row);
+      putReq.onerror = () => res(null);
+    };
+    getReq.onerror = () => res(null);
+  });
+}
+
+export async function dismissSavedTab(id) {
+  const store = await tx('savedTabs', 'readwrite');
+  return new Promise((res) => {
+    const getReq = store.get(id);
+    getReq.onsuccess = () => {
+      const row = getReq.result;
+      if (!row) return res(null);
+      row.status = 'dismissed';
+      row.dismissedAt = Date.now();
+      const putReq = store.put(row);
+      putReq.onsuccess = () => res(row);
+      putReq.onerror = () => res(null);
+    };
+    getReq.onerror = () => res(null);
   });
 }

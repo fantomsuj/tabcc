@@ -10,6 +10,10 @@ import {
   triageTab,
   getUntriagedDownloads,
   getUntriagedTabs,
+  saveTabForLater,
+  getSavedTabs,
+  completeSavedTab,
+  dismissSavedTab,
   getMeta,
   setMeta
 } from './lib/storage.js';
@@ -221,9 +225,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         case 'getReviewData': {
           const tabs = await getUntriagedTabs();
           const downloads = await getUntriagedDownloads();
+          const savedTabs = await getSavedTabs();
           const tabPressure = await currentTabPressure();
           const downloadPressure = await currentDownloadPressure();
-          sendResponse({ tabs, downloads, tabPressure, downloadPressure });
+          sendResponse({ tabs, downloads, savedTabs, tabPressure, downloadPressure });
           break;
         }
         case 'triageTab': {
@@ -232,6 +237,26 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             try { await chrome.tabs.remove(msg.id); } catch (e) { /* tab may already be closed */ }
           }
           sendResponse({ ok: true });
+          break;
+        }
+        case 'closeDuplicateTabs': {
+          const result = await closeDuplicateTabs(msg.urls || []);
+          sendResponse({ ok: true, ...result });
+          break;
+        }
+        case 'saveTabForLater': {
+          const result = await saveAndCloseTab(msg.tab || {}, msg.note || '');
+          sendResponse({ ok: true, ...result });
+          break;
+        }
+        case 'completeSavedTab': {
+          const item = await completeSavedTab(msg.id);
+          sendResponse({ ok: !!item, item });
+          break;
+        }
+        case 'dismissSavedTab': {
+          const item = await dismissSavedTab(msg.id);
+          sendResponse({ ok: !!item, item });
           break;
         }
         case 'triageDownload': {
@@ -301,4 +326,72 @@ function hostOf(url) {
 
 function isInternal(url) {
   return url.startsWith('chrome://') || url.startsWith('chrome-extension://') || url.startsWith('about:') || url.startsWith('edge://');
+}
+
+async function closeDuplicateTabs(urls) {
+  const targetUrls = Array.from(new Set((urls || []).filter(Boolean)));
+  if (targetUrls.length === 0) return { closed: 0 };
+
+  const allTabs = await chrome.tabs.query({});
+  const toClose = [];
+
+  for (const url of targetUrls) {
+    const matches = allTabs.filter((tab) => tab.url === url);
+    if (matches.length <= 1) continue;
+
+    const keep = matches.find((tab) => tab.active) || matches[0];
+    for (const tab of matches) {
+      if (tab.id !== keep.id) toClose.push(tab.id);
+    }
+  }
+
+  if (toClose.length === 0) return { closed: 0 };
+
+  await Promise.all(toClose.map((id) => triageTab(id, 'closed-duplicate')));
+  try {
+    await chrome.tabs.remove(toClose);
+  } catch (e) {
+    // Some tabs may have disappeared between query and close; storage is already triaged.
+  }
+
+  return { closed: toClose.length };
+}
+
+async function saveAndCloseTab(tab, note = '') {
+  const sourceTabId = tab.id ?? tab.sourceTabId ?? null;
+  const hydratedTab = await hydrateTab(tab, sourceTabId);
+  if (!hydratedTab.url) return { saved: null, closed: false };
+
+  const saved = await saveTabForLater(hydratedTab, note);
+  if (sourceTabId != null) {
+    await triageTab(sourceTabId, 'saved-for-later', note);
+  }
+
+  let closed = false;
+  if (sourceTabId != null) {
+    try {
+      await chrome.tabs.remove(sourceTabId);
+      closed = true;
+    } catch (e) {
+      // It may already be gone; the saved item is still useful.
+    }
+  }
+
+  return { saved, closed };
+}
+
+async function hydrateTab(tab, sourceTabId) {
+  if (tab.url || sourceTabId == null) return tab;
+  try {
+    const live = await chrome.tabs.get(sourceTabId);
+    return {
+      ...tab,
+      id: live.id,
+      url: live.url || '',
+      title: live.title || '',
+      favicon: live.favIconUrl || ''
+    };
+  } catch (e) {
+    return tab;
+  }
 }
