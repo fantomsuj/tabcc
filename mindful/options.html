@@ -1,0 +1,182 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Mindful · Settings</title>
+<style>
+  body {
+    margin: 0;
+    background: #f5efe2;
+    color: #1a1a1a;
+    font-family: 'Iowan Old Style', Palatino, Georgia, serif;
+    padding: 40px 24px;
+  }
+  .wrap { max-width: 540px; margin: 0 auto; }
+  h1 {
+    font-size: 32px;
+    font-style: italic;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #5c4a32;
+    margin-bottom: 28px;
+  }
+  fieldset {
+    border: 1px solid #2b2b2b;
+    background: #ede5d2;
+    padding: 18px 20px;
+    margin: 0 0 20px;
+    box-shadow: 4px 4px 0 #2b2b2b;
+  }
+  legend {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #1a1a1a;
+    padding: 0 6px;
+  }
+  label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dashed #5c4a32;
+    font-size: 16px;
+  }
+  label:last-child { border-bottom: none; }
+  label .desc {
+    font-size: 12px;
+    color: #5c4a32;
+    font-style: italic;
+    display: block;
+    margin-top: 2px;
+  }
+  input[type="number"] {
+    width: 70px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    background: #f5efe2;
+    border: 1px solid #1a1a1a;
+    padding: 6px 8px;
+    text-align: right;
+  }
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #1a1a1a;
+  }
+  .threshold-row {
+    display: grid;
+    grid-template-columns: 1fr 70px 70px 70px;
+    gap: 8px;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 14px;
+  }
+  .threshold-row .header {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #5c4a32;
+    text-align: right;
+  }
+  .save {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: #1a1a1a;
+    color: #f5efe2;
+    border: 1px solid #1a1a1a;
+    padding: 12px 18px;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 #5c4a32;
+  }
+  .save:hover { background: #5c4a32; border-color: #5c4a32; }
+  .saved {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #5c4a32;
+    margin-left: 14px;
+    opacity: 0;
+    transition: opacity 200ms;
+  }
+  .saved.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Settings</h1>
+  <div class="sub">Tune the friction</div>
+
+  <fieldset>
+    <legend>Nudges</legend>
+    <label>
+      <span>Nudge on download<span class="desc">Toast when a file lands</span></span>
+      <input type="checkbox" id="nudgeOnDownload" />
+    </label>
+    <label>
+      <span>Nudge on new tab<span class="desc">Toast when a tab finishes loading</span></span>
+      <input type="checkbox" id="nudgeOnNewTab" />
+    </label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Tab thresholds</legend>
+    <div class="threshold-row">
+      <span></span>
+      <span class="header">Soft</span>
+      <span class="header">Medium</span>
+      <span class="header">Hard</span>
+    </div>
+    <div class="threshold-row">
+      <span>Open tabs</span>
+      <input type="number" id="tabSoftThreshold" min="1" />
+      <input type="number" id="tabMediumThreshold" min="1" />
+      <input type="number" id="tabHardThreshold" min="1" />
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Download thresholds</legend>
+    <div class="threshold-row">
+      <span></span>
+      <span class="header">Soft</span>
+      <span class="header">Medium</span>
+      <span class="header">Hard</span>
+    </div>
+    <div class="threshold-row">
+      <span>Unfiled downloads</span>
+      <input type="number" id="downloadSoftThreshold" min="1" />
+      <input type="number" id="downloadMediumThreshold" min="1" />
+      <input type="number" id="downloadHardThreshold" min="1" />
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Batched review</legend>
+    <label>
+      <span>Run scheduled reviews<span class="desc">Notification when there's stuff to triage</span></span>
+      <input type="checkbox" id="reviewEnabled" />
+    </label>
+    <label>
+      <span>Interval (hours)<span class="desc">How often to ping you</span></span>
+      <input type="number" id="reviewIntervalHours" min="1" max="24" />
+    </label>
+  </fieldset>
+
+  <button class="save" id="save">Save</button>
+  <span class="saved" id="saved">Saved</span>
+</div>
+<script src="options.js"></script>
+</body>
+</html>

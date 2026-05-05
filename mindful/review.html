@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Mindful · Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="review.css" />
+</head>
+<body>
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div class="brand">
+        <span class="brand-mark">M</span>
+        <div>
+          <div class="brand-name">Mindful</div>
+          <div class="brand-sub">A periodical of unfiled things</div>
+        </div>
+      </div>
+      <div class="masthead-meta">
+        <span id="now"></span>
+        <span class="sep">·</span>
+        <span id="counts"></span>
+      </div>
+    </div>
+    <div class="rule"></div>
+  </header>
+
+  <main>
+    <section id="downloads-section" class="section">
+      <div class="section-head">
+        <h2>Downloads</h2>
+        <div class="section-actions">
+          <button id="downloads-claude" class="ghost">Send all to Claude</button>
+          <button id="downloads-clear" class="ghost">Mark all reviewed</button>
+        </div>
+      </div>
+      <div id="downloads-list" class="list"></div>
+      <p id="downloads-empty" class="empty hidden">Nothing to file. Quiet desk.</p>
+    </section>
+
+    <section id="tabs-section" class="section">
+      <div class="section-head">
+        <h2>Tabs</h2>
+        <div class="section-actions">
+          <button id="tabs-claude" class="ghost">Send all to Claude</button>
+          <button id="tabs-cluster" class="ghost">Cluster with Claude</button>
+        </div>
+      </div>
+      <div id="tabs-list" class="list"></div>
+      <p id="tabs-empty" class="empty hidden">No untriaged tabs. Notable.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="rule"></div>
+    <div class="foot-inner">
+      <span>Browser history is the source of truth. This is just a desk to triage on.</span>
+      <a href="options.html" target="_blank">Settings</a>
+    </div>
+  </footer>
+
+  <script src="review.js" type="module"></script>
+</body>
+</html>

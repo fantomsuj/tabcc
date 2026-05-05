@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Mindful</title>
+<style>
+  body {
+    margin: 0;
+    width: 280px;
+    padding: 16px;
+    background: #f5efe2;
+    color: #1a1a1a;
+    font-family: 'Iowan Old Style', Palatino, Georgia, serif;
+  }
+  h1 {
+    font-size: 22px;
+    margin: 0 0 4px;
+    font-style: italic;
+    font-weight: 600;
+  }
+  .sub {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #5c4a32;
+    margin-bottom: 14px;
+  }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 8px 0;
+    border-bottom: 1px dashed #5c4a32;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #5c4a32;
+  }
+  .stat-row .num {
+    font-family: 'Iowan Old Style', Palatino, Georgia, serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #1a1a1a;
+    letter-spacing: -0.01em;
+  }
+  .stat-row.hard .num { color: #8b1a1a; }
+  .stat-row.medium .num { color: #a04923; }
+
+  .actions {
+    margin-top: 16px;
+    display: grid;
+    gap: 8px;
+  }
+  button {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 9px 11px;
+    cursor: pointer;
+    background: transparent;
+    color: #1a1a1a;
+    border: 1px solid #1a1a1a;
+    text-align: left;
+  }
+  button:hover { background: #1a1a1a; color: #f5efe2; }
+  button.primary { background: #1a1a1a; color: #f5efe2; }
+  button.primary:hover { background: #5c4a32; border-color: #5c4a32; }
+
+  .footer {
+    margin-top: 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #5c4a32;
+    text-align: center;
+  }
+  .footer a { color: #1a1a1a; text-decoration: none; border-bottom: 1px solid #1a1a1a; }
+</style>
+</head>
+<body>
+  <h1>Mindful</h1>
+  <div class="sub">Where is this going?</div>
+
+  <div id="stats">
+    <div class="stat-row" id="tab-stat">
+      <span>Open tabs</span>
+      <span class="num" id="tab-num">—</span>
+    </div>
+    <div class="stat-row" id="dl-stat">
+      <span>Unfiled downloads</span>
+      <span class="num" id="dl-num">—</span>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button id="open-review" class="primary">Open the review desk</button>
+    <button id="claude-tabs">Send all tabs to Claude</button>
+  </div>
+
+  <div class="footer">
+    <a href="#" id="open-options">Settings</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
